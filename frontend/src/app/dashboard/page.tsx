@@ -12,17 +12,26 @@ export default function DashboardPage() {
   const { isAuthenticated } = useAuth();
   const [tasks, setTasks] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [sortParam, setSortParam] = useState<string>('newest');
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchTasks();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, activeFilter, sortParam]);
 
   const fetchTasks = async () => {
     try {
       setIsLoading(true);
-      const data = await fetchApi('/tasks');
+      const params = new URLSearchParams();
+      if (activeFilter === 'high_priority') params.append('priority', 'high');
+      if (activeFilter === 'deadline_approaching') params.append('deadline', 'approaching');
+      if (activeFilter === 'in_progress') params.append('status', 'pending');
+      
+      if (sortParam) params.append('sort', sortParam);
+
+      const data = await fetchApi(`/tasks?${params.toString()}`);
       setTasks(data || []);
     } catch (e) {
       console.error(e);
@@ -48,8 +57,8 @@ export default function DashboardPage() {
     <DashboardTemplate>
       <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
         <div className="md:col-span-7">
-          <h2 className="text-5xl font-headline font-extrabold text-primary leading-tight mb-4">Daily Editorial <br/>Overview</h2>
-          <p className="text-on-surface-variant max-w-md text-lg leading-relaxed">Your curated selection of prioritized tasks for the spring collection workspace.</p>
+          <h2 className="text-5xl font-headline font-extrabold text-primary leading-tight mb-4">Overview</h2>
+          <p className="text-on-surface-variant max-w-md text-lg leading-relaxed">Prioritized tasks for workspace.</p>
         </div>
         <div className="md:col-span-5 grid grid-cols-2 gap-4">
           <StatCard label="In Progress" value={inProgressCount.toString()} highlighted />
@@ -59,17 +68,42 @@ export default function DashboardPage() {
 
       <section className="flex flex-wrap items-center justify-between gap-6 bg-surface-container-low/50 p-2 rounded-full ghost-border px-6 py-3">
         <div className="flex items-center gap-4 overflow-x-auto no-scrollbar">
-          <button className="px-5 py-2 rounded-full bg-primary text-white font-medium text-sm whitespace-nowrap">All Tasks</button>
-          <button className="px-5 py-2 rounded-full hover:bg-surface-container-highest text-on-surface-variant font-medium text-sm transition-colors whitespace-nowrap">High Priority</button>
-          <button className="px-5 py-2 rounded-full hover:bg-surface-container-highest text-on-surface-variant font-medium text-sm transition-colors whitespace-nowrap">Deadline Approaching</button>
-          <button className="px-5 py-2 rounded-full hover:bg-surface-container-highest text-on-surface-variant font-medium text-sm transition-colors whitespace-nowrap">Unassigned</button>
+          <button 
+            onClick={() => setActiveFilter('all')}
+            className={`px-5 py-2 rounded-full font-medium text-sm transition-colors whitespace-nowrap ${activeFilter === 'all' ? 'bg-primary text-white' : 'hover:bg-surface-container-highest text-on-surface-variant'}`}
+          >
+            All Tasks
+          </button>
+          <button 
+            onClick={() => setActiveFilter('high_priority')}
+            className={`px-5 py-2 rounded-full font-medium text-sm transition-colors whitespace-nowrap ${activeFilter === 'high_priority' ? 'bg-primary text-white' : 'hover:bg-surface-container-highest text-on-surface-variant'}`}
+          >
+            High Priority
+          </button>
+          <button 
+            onClick={() => setActiveFilter('deadline_approaching')}
+            className={`px-5 py-2 rounded-full font-medium text-sm transition-colors whitespace-nowrap ${activeFilter === 'deadline_approaching' ? 'bg-primary text-white' : 'hover:bg-surface-container-highest text-on-surface-variant'}`}
+          >
+            Deadline Approaching
+          </button>
+          <button 
+            onClick={() => setActiveFilter('in_progress')}
+            className={`px-5 py-2 rounded-full font-medium text-sm transition-colors whitespace-nowrap ${activeFilter === 'in_progress' ? 'bg-primary text-white' : 'hover:bg-surface-container-highest text-on-surface-variant'}`}
+          >
+            In Progress
+          </button>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-label text-[10px] uppercase tracking-widest text-outline mr-2">Sort by:</span>
-          <select className="bg-transparent border-none text-sm font-semibold focus:ring-0 cursor-pointer text-primary">
-            <option>Newest First</option>
-            <option>Oldest First</option>
-            <option>Priority</option>
+          <select 
+            value={sortParam}
+            onChange={(e) => setSortParam(e.target.value)}
+            className="bg-transparent border-none text-sm font-semibold focus:ring-0 cursor-pointer text-primary"
+          >
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="priority">Priority</option>
+            <option value="deadline">Deadline</option>
           </select>
         </div>
       </section>
@@ -83,7 +117,7 @@ export default function DashboardPage() {
             <div className="col-span-2 text-center">Deadline</div>
             <div className="col-span-1"></div>
           </div>
-          
+
           <div className="space-y-3 mt-4">
             {isLoading ? (
               <div className="text-center py-8 text-on-surface-variant text-sm tracking-widest font-label uppercase">Loading tasks...</div>
@@ -91,8 +125,8 @@ export default function DashboardPage() {
               <div className="text-center py-8 text-on-surface-variant text-sm tracking-widest font-label uppercase">No tasks available</div>
             ) : (
               tasks.map((task) => (
-                <TaskRow 
-                  key={task.id} 
+                <TaskRow
+                  key={task.id}
                   id={task.id}
                   title={task.title}
                   description={task.description || ''}

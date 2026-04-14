@@ -49,8 +49,8 @@ export function SideNavBar({ variant = 'dashboard' }: SideNavBarProps) {
   return (
     <aside className="hidden md:flex flex-col py-8 gap-2 h-screen w-72 sticky left-0 top-0 bg-[#fbf3e4] dark:bg-stone-900 border-r border-stone-200/50 dark:border-stone-800/50 font-['Inter'] text-sm tracking-wide">
       <div className="px-8 mb-10">
-        <h1 className="text-xl font-extrabold text-[#228B22] dark:text-[#418340]">Taskmaster</h1>
-        <p className="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant mt-1">Editorial Workspace</p>
+        <h1 className="text-xl font-extrabold text-[#228B22] dark:text-[#418340]">HubTask+</h1>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant mt-1">Task Management</p>
       </div>
 
       {/* <nav className="flex-1 space-y-1">
