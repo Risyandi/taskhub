@@ -39,8 +39,28 @@ class TaskController extends Controller
             $query->where('priority', $request->priority);
         }
 
-        if ($request->query('sort') === 'deadline') {
+        if ($request->has('status')) {
+            if ($request->status === 'completed') {
+                $query->where('is_completed', true);
+            } elseif ($request->status === 'pending') {
+                $query->where('is_completed', false);
+            }
+        }
+
+        if ($request->has('deadline') && $request->deadline === 'approaching') {
+            $query->whereDate('date_deadline', '<=', Carbon::tomorrow('Asia/Jakarta')->format('Y-m-d'))
+                  ->where('is_completed', false);
+        }
+
+        $sort = $request->query('sort', 'newest');
+        if ($sort === 'deadline') {
             $query->orderBy('date_deadline', 'asc');
+        } elseif ($sort === 'oldest') {
+            $query->orderBy('created_at', 'asc');
+        } elseif ($sort === 'priority') {
+            $query->orderByRaw("FIELD(priority, 'high', 'moderate', 'low')");
+        } else {
+            $query->orderBy('created_at', 'desc');
         }
 
         $tasks = $query->get()->map(function ($task) {
