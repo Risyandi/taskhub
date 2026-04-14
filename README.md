@@ -70,6 +70,13 @@ We adhere to strict coding standards, including PSR-12 for PHP and ESLint/Pretti
 
 ---
 
+## Pertanyaan Refleksi 
+1. Apa tantangan paling sulit saat membuat test ini?
+2. Jika Anda diberi waktu tambahan 2 jam, fitur apa yang akan Anda tambahkan?
+3. Apa kelebihan struktur kode Anda dibanding copy paste dari AI?
+
+---
+
 ## License
 TaskHub+ is distributed under the MIT License.
 
