@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TaskHub+ Frontend
 
-## Getting Started
+Ini merupakan komponen frontend dari sistem TaskHub+, yang dikembangkan untuk manajemen tugas berperforma tinggi dengan antarmuka pengguna yang teroptimasi.
 
-First, run the development server:
+## Teknologi yang Digunakan
+
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+- **Library**: [React 18](https://reactjs.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Bahasa**: [TypeScript](https://www.typescriptlang.org/)
+- **Manajer Paket**: [pnpm](https://pnpm.io/)
+
+## Panduan Instalasi dan Penggunaan
+
+Langkah awal, pastikan seluruh dependensi telah terinstal:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Selanjutnya, jalankan server pengembangan:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Aplikasi dapat diakses melalui alamat [http://localhost:3000](http://localhost:3000).
 
-## Learn More
+## Dokumentasi Desain Antarmuka (UI)
 
-To learn more about Next.js, take a look at the following resources:
+Berikut adalah dokumentasi desain awal dan wireframe untuk antarmuka TaskHub+ yang tersedia pada direktori `docs/design`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Halaman Login
+![Login Screen](docs/design/login/screen.png)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Halaman Registrasi
+![Register Screen](docs/design/register/screen.png)
 
-## Deploy on Vercel
+### Dashboard Utama
+![Dashboard Screen](docs/design/dashboard/screen.png)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Penambahan Tugas
+![Add Task Screen](docs/design/add_new_task/screen.png)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Detail Tugas
+![Task Details Screen](docs/design/task_details/screen.png)
+
+---
+**Software Architect**: [Risyandi](https://github.com/risyandi)
