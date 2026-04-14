@@ -4,8 +4,11 @@
 import React from 'react';
 import { DashboardTemplate } from '@/components/templates/DashboardTemplate';
 import { TaskFormModal } from '@/components/organisms/TaskFormModal';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function NewTaskPage() {
+  useAuth();
+  
   return (
     <>
       <DashboardTemplate>

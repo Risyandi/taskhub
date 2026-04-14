@@ -9,24 +9,32 @@ interface User {
 }
 
 export interface TaskRowProps {
+  id?: number | string;
   title: string;
   description: string;
-  users: User[];
-  priority: 'High' | 'Medium' | 'Low';
+  users?: User[];
+  priority: 'High' | 'Medium' | 'Low' | string;
   deadline: string;
   completed?: boolean;
+  onToggle?: (id: number | string) => void;
 }
 
-export function TaskRow({ title, description, users, priority, deadline, completed = false }: TaskRowProps) {
+export function TaskRow({ id, title, description, users = [], priority, deadline, completed = false, onToggle }: TaskRowProps) {
   return (
     <div className="grid grid-cols-12 gap-4 px-6 py-6 items-center bg-surface-container-lowest rounded-xl hover:bg-surface-container transition-colors group">
       <div className="col-span-5 flex items-start gap-4">
         {completed ? (
-          <div className="mt-1 w-5 h-5 rounded-md border-2 border-primary bg-primary flex items-center justify-center cursor-pointer">
+          <div 
+            onClick={() => id && onToggle && onToggle(id)}
+            className="mt-1 w-5 h-5 rounded-md border-2 border-primary bg-primary flex items-center justify-center cursor-pointer"
+          >
             <span className="material-symbols-outlined text-white text-[14px]">check</span>
           </div>
         ) : (
-          <div className="mt-1 w-5 h-5 rounded-md border-2 border-outline-variant flex items-center justify-center group-hover:border-primary transition-colors cursor-pointer"></div>
+          <div 
+            onClick={() => id && onToggle && onToggle(id)}
+            className="mt-1 w-5 h-5 rounded-md border-2 border-outline-variant flex items-center justify-center group-hover:border-primary transition-colors cursor-pointer"
+          ></div>
         )}
         
         <div>

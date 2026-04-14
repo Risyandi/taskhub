@@ -5,8 +5,11 @@ import React from 'react';
 import { TaskDetailsTemplate } from '@/components/templates/TaskDetailsTemplate';
 import { ChecklistItem } from '@/components/molecules/ChecklistItem';
 import { CommentItem } from '@/components/molecules/CommentItem';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function TaskDetailsPage() {
+  useAuth();
+  
   return (
     <TaskDetailsTemplate>
       <nav className="flex items-center gap-2 text-xs font-medium text-outline uppercase tracking-widest mb-6">

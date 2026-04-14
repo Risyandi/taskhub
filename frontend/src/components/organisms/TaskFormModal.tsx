@@ -1,8 +1,53 @@
-// created by risyandi.com - 2026
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { fetchApi } from '@/lib/api';
 
 export function TaskFormModal() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+
+    // Convert date YYYY-MM-DD to DD/MM/YYYY
+    let rawDate = data.date_deadline as string;
+    if (rawDate) {
+      const [year, month, day] = rawDate.split("-");
+      data.date_deadline = `${day}/${month}/${year}`;
+    }
+
+    try {
+      await fetchApi('/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...data,
+          date_deadline: data.date_deadline,
+        }),
+      });
+      router.push('/dashboard');
+      router.refresh(); // Ensure dashboard updates
+    } catch (err: any) {
+      if (err.errors) {
+        const firstErrorKey = Object.keys(err.errors)[0];
+        setError(err.errors[firstErrorKey][0]);
+      } else {
+        setError(err.message || 'Error publishing task');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6 sm:p-12">
       <div className="absolute inset-0 bg-on-surface/40 backdrop-blur-sm"></div>
@@ -36,11 +81,13 @@ export function TaskFormModal() {
             </Link>
           </div>
 
-          <form className="space-y-6 flex-1 overflow-y-auto pr-2">
+          <form className="space-y-6 flex-1 overflow-y-auto pr-2" onSubmit={handleSubmit} id="task-form">
             <div className="space-y-1">
               <label className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant font-bold ml-1">Task Title</label>
               <input 
                 type="text"
+                name="title"
+                required
                 className="w-full bg-surface-container-low border-none border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-on-surface py-3 px-1 transition-all font-headline text-lg placeholder:text-on-surface-variant/30" 
                 placeholder="e.g. Website Rebranding Strategy" 
               />
@@ -49,6 +96,7 @@ export function TaskFormModal() {
             <div className="space-y-1">
               <label className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant font-bold ml-1">Context & Details</label>
               <textarea 
+                name="description"
                 className="w-full bg-surface-container-low border-none border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-on-surface py-3 px-1 transition-all resize-none font-body text-sm placeholder:text-on-surface-variant/30" 
                 placeholder="Describe the core objectives..." 
                 rows={3}
@@ -62,6 +110,8 @@ export function TaskFormModal() {
                   <span className="material-symbols-outlined absolute left-1 top-1/2 -translate-y-1/2 text-primary text-lg" data-icon="calendar_month">calendar_month</span>
                   <input 
                     type="date"
+                    name="date_deadline"
+                    required
                     className="w-full bg-surface-container-low border-none border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-on-surface py-3 pl-8 pr-1 transition-all font-body text-sm" 
                   />
                 </div>
@@ -69,9 +119,9 @@ export function TaskFormModal() {
               
               <div className="space-y-1">
                 <label className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant font-bold ml-1">Priority Level</label>
-                <select className="w-full bg-surface-container-low border-none border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-on-surface py-3 px-1 transition-all font-body text-sm appearance-none cursor-pointer">
+                <select name="priority" className="w-full bg-surface-container-low border-none border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-on-surface py-3 px-1 transition-all font-body text-sm appearance-none cursor-pointer">
                   <option value="low">Low Priority</option>
-                  <option value="moderate" selected>Moderate Priority</option>
+                  <option value="moderate" defaultValue="moderate">Moderate Priority</option>
                   <option value="high">High Priority</option>
                 </select>
               </div>
@@ -83,9 +133,13 @@ export function TaskFormModal() {
             </div>
           </form>
 
+          {error && <p className="text-error text-sm mt-4 font-bold">{error}</p>}
+
           <div className="mt-10 flex gap-4">
             <Link href="/dashboard" className="flex-1 py-4 text-center text-sm font-label uppercase tracking-widest font-bold text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-xl flex items-center justify-center">Discard</Link>
-            <button className="flex-[2] py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-widest text-sm">Publish Task</button>
+            <button type="submit" form="task-form" disabled={isLoading} className="flex-[2] py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-widest text-sm disabled:opacity-50 disabled:pointer-events-none">
+              {isLoading ? 'Publishing...' : 'Publish Task'}
+            </button>
           </div>
         </div>
 

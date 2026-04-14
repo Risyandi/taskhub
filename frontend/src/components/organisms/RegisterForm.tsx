@@ -1,16 +1,55 @@
 // created by risyandi.com - 2026
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormField } from "../molecules/FormField";
 import { PasswordField } from "../molecules/PasswordField";
 import { CheckboxField } from "../molecules/CheckboxField";
 import { Button } from "../atoms/Button";
+import { fetchApi } from "@/lib/api";
 
 export function RegisterForm() {
-  const handleSubmit = (e: React.FormEvent) => {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Map human checkbox to boolean
+    const payload = {
+      ...data,
+      verified_human: data.verified_human === "on"
+    };
+
+    try {
+      const response = await fetchApi('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (response && response.accessToken) {
+        localStorage.setItem('accessToken', response.accessToken);
+        router.push('/dashboard');
+      }
+    } catch (err: any) {
+      if (err.errors) {
+        const firstErrorKey = Object.keys(err.errors)[0];
+        setError(err.errors[firstErrorKey][0]);
+      } else {
+        setError(err.message || 'Registration failed');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -60,11 +99,12 @@ export function RegisterForm() {
 
         <CheckboxField 
           label="I confirm that I am a verified human curator"
-          id="human"
+          id="verified_human"
         />
 
         <div className="pt-4">
-          <Button type="submit">Create Account</Button>
+          {error && <p className="text-error text-sm mb-4 font-bold">{error}</p>}
+          <Button type="submit" disabled={isLoading}>{isLoading ? "Creating..." : "Create Account"}</Button>
         </div>
 
         <p className="text-center text-sm text-outline-variant mt-8 font-label px-8">

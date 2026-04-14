@@ -1,16 +1,44 @@
 // created by risyandi.com - 2026
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormField } from "../molecules/FormField";
 import { PasswordField } from "../molecules/PasswordField";
 import { SocialAuthButton } from "../molecules/SocialAuthButton";
 import { Button } from "../atoms/Button";
+import { fetchApi } from "@/lib/api";
 
 export function LoginForm() {
-  const handleSubmit = (e: React.FormEvent) => {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const response = await fetchApi('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (response && response.accessToken) {
+        localStorage.setItem('accessToken', response.accessToken);
+        router.push('/dashboard');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -38,7 +66,8 @@ export function LoginForm() {
         />
 
         <div className="pt-4">
-          <Button type="submit">Sign in to Workspace</Button>
+          {error && <p className="text-error text-sm mb-4 font-bold">{error}</p>}
+          <Button type="submit" disabled={isLoading}>{isLoading ? "Signing in..." : "Sign in to Workspace"}</Button>
         </div>
       </form>
 
