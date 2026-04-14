@@ -10,14 +10,14 @@ export function BrandHero({ variant }: BrandHeroProps) {
     return (
       <div className="hidden lg:flex w-full h-full relative bg-surface-container-low p-20 flex-col justify-between items-start">
         <div className="z-10">
-          <span className="font-headline font-extrabold text-2xl tracking-tight text-primary">The Curator</span>
+          <span className="font-headline font-extrabold text-2xl tracking-tight text-primary">TaskHub+</span>
         </div>
         <div className="relative z-10 max-w-lg">
           <h1 className="font-headline text-[3.5rem] leading-[1.1] font-extrabold text-primary tracking-tight mb-8">
             Organize with <br />Intention.
           </h1>
           <p className="text-on-surface-variant text-lg leading-relaxed max-w-sm">
-            A curated workspace designed for deep focus and editorial clarity. Elevate your daily tasks into a masterpiece of productivity.
+            A task workspace designed for deep focus and clarity. Elevate your daily tasks into a masterpiece of productivity.
           </p>
         </div>
         <div className="w-full relative z-10">
@@ -36,10 +36,10 @@ export function BrandHero({ variant }: BrandHeroProps) {
     <section className="hidden lg:flex flex-col justify-between p-16 h-full bg-primary-container relative overflow-hidden">
       <div className="relative z-10">
         <h1 className="font-headline text-5xl lg:text-6xl text-on-primary-container font-extrabold tracking-tight mb-4">
-          The Curator
+          TaskHub+
         </h1>
         <p className="font-body text-on-primary-container/80 text-xl max-w-md leading-relaxed">
-          Transforming task management into a focused, calm, and premium experience. Welcome to your new editorial workspace.
+          Transforming task management into a focused, calm, and premium experience. Welcome to your workspace.
         </p>
       </div>
       <div className="relative z-10">
