@@ -43,10 +43,13 @@ Pastikan perangkat Anda telah memenuhi persyaratan berikut sebelum memulai insta
    ```
 
 5. **Migrasi Database**
-   Pastikan Anda telah membuat database kosong di MySQL sesuai dengan nama yang ada di file `.env`.
+   Pastikan Anda telah membuat database kosong di MySQL sesuai dengan nama yang ada di file `.env`. Anda dapat menggunakan perintah migrasi:
    ```bash
    php artisan migrate
    ```
+   **Atau**, Anda dapat mengimpor database secara manual menggunakan file SQL yang tersedia:
+   - Lokasi File: `docs/taskhub_db.sql`
+   - Gunakan aplikasi seperti phpMyAdmin, DBeaver, atau perintah `mysql` untuk mengimpor file tersebut ke database Anda.
 
 6. **Menjalankan Server**
    ```bash
@@ -69,19 +72,11 @@ Endpoint ini digunakan untuk melakukan autentikasi pengguna dan mendapatkan toke
 
 ### 3. Membuat Tugas Baru (Create Task)
 Endpoint ini digunakan untuk menambahkan tugas baru setelah pengguna berhasil melakukan autentikasi.
-
-### 4. Pengujian Otomatis (Automated Testing)
-Selain pengujian manual menggunakan Postman, Anda juga dapat menjalankan pengujian otomatis yang telah disediakan menggunakan perintah berikut:
-
-```bash
-php artisan test
-```
-
-Perintah ini akan menjalankan seluruh rangkaian pengujian fitur dan unit untuk memastikan integritas kode tetap terjaga.
+![Pengujian Membuat Tugas Baru](docs/create-task-postman.PNG)   
 
 ## Instruksi Penggunaan Postman
 
-Kami telah menyediakan file koleksi Postman untuk memudahkan pengujian endpoint API. File tersebut berada di direktori `docs/`.
+Saya telah menyediakan file koleksi Postman untuk memudahkan pengujian endpoint API. File tersebut berada di direktori `docs/`.
 
 **Langkah-langkah Impor:**
 
