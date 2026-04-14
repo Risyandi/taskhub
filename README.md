@@ -60,6 +60,10 @@ pnpm dev
 3. **Apa kelebihan struktur kode Anda dibanding hasil copy-paste AI?**
    Struktur kode saya menerapkan prinsip arsitektur yang bersih (Clean Architecture) pada frontend dengan pemisahan komponen atomik, serta pemanfaatan fitur-fitur modern Laravel secara efisien, yang membuatnya lebih mudah dipelihara dan dikembangkan dibandingkan sekadar kumpulan kode acak.
 
+## Demo Aplikasi
+
+![TaskHub+ Demo](demo.gif)
+
 ---
 
 **Dikembangkan oleh**: [Risyandi](https://github.com/risyandi) - 2026
