@@ -10,17 +10,46 @@ import { CheckboxField } from "../molecules/CheckboxField";
 import { Button } from "../atoms/Button";
 import { fetchApi } from "@/lib/api";
 
+import { validateEmail, validatePassword, validateRequired } from "@/lib/validation";
+
 export function RegisterForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string | null }>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    setIsLoading(true);
+    setFieldErrors({});
 
     const formData = new FormData(e.currentTarget);
+    const fullname = formData.get("fullname") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const confirm_password = formData.get("confirm_password") as string;
+
+    // Client-side validation
+    const nameError = validateRequired(fullname, "Full name");
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+    let confirmError = null;
+
+    if (password !== confirm_password) {
+      confirmError = "Passwords do not match";
+    }
+
+    if (nameError || emailError || passwordError || confirmError) {
+      setFieldErrors({
+        fullname: nameError,
+        email: emailError,
+        password: passwordError,
+        confirm_password: confirmError,
+      });
+      return;
+    }
+
+    setIsLoading(true);
     const data = Object.fromEntries(formData.entries());
 
     // Map human checkbox to boolean
@@ -42,8 +71,12 @@ export function RegisterForm() {
       }
     } catch (err: any) {
       if (err.errors) {
-        const firstErrorKey = Object.keys(err.errors)[0];
-        setError(err.errors[firstErrorKey][0]);
+        const errors: { [key: string]: string | null } = {};
+        Object.keys(err.errors).forEach((key) => {
+          errors[key] = err.errors[key][0];
+        });
+        setFieldErrors(errors);
+        setError("Please check the fields above");
       } else {
         setError(err.message || 'Registration failed');
       }
@@ -72,6 +105,7 @@ export function RegisterForm() {
           type="text"
           placeholder="Evelyn S. Miller"
           variant="register"
+          error={fieldErrors.fullname}
         />
 
         <FormField
@@ -80,6 +114,7 @@ export function RegisterForm() {
           type="email"
           placeholder="evelyn@curator.io"
           variant="register"
+          error={fieldErrors.email}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -88,17 +123,19 @@ export function RegisterForm() {
             id="password"
             placeholder="••••••••"
             variant="register"
+            error={fieldErrors.password}
           />
           <PasswordField
             label="CONFIRM"
             id="confirm_password"
             placeholder="••••••••"
             variant="register"
+            error={fieldErrors.confirm_password}
           />
         </div>
 
         <CheckboxField
-          label="I confirm that I am a verified human curator"
+          label="I confirm, I am a verified human"
           id="verified_human"
         />
 

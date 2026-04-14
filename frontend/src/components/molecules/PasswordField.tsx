@@ -10,9 +10,10 @@ interface PasswordFieldProps extends React.InputHTMLAttributes<HTMLInputElement>
   id: string;
   variant?: "login" | "register";
   forgotLink?: boolean;
+  error?: string | null;
 }
 
-export function PasswordField({ label, id, variant = "login", forgotLink = false, ...props }: PasswordFieldProps) {
+export function PasswordField({ label, id, variant = "login", forgotLink = false, error, ...props }: PasswordFieldProps) {
   const [show, setShow] = useState(false);
 
   return (
@@ -30,6 +31,7 @@ export function PasswordField({ label, id, variant = "login", forgotLink = false
           type={show ? "text" : "password"} 
           variant={variant} 
           className={variant === "register" ? "pr-10" : ""}
+          isError={!!error}
           {...props} 
         />
         <button 
@@ -42,6 +44,11 @@ export function PasswordField({ label, id, variant = "login", forgotLink = false
           </span>
         </button>
       </div>
+      {error && (
+        <p className="text-error text-xs font-bold mt-1 animate-in fade-in slide-in-from-top-1 duration-200">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

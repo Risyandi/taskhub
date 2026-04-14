@@ -10,17 +10,36 @@ import { SocialAuthButton } from "../molecules/SocialAuthButton";
 import { Button } from "../atoms/Button";
 import { fetchApi } from "@/lib/api";
 
+import { validateEmail, validatePassword } from "@/lib/validation";
+
 export function LoginForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string | null }>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    setIsLoading(true);
+    setFieldErrors({});
 
     const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    // Client-side validation
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    if (emailError || passwordError) {
+      setFieldErrors({
+        email: emailError,
+        password: passwordError,
+      });
+      return;
+    }
+
+    setIsLoading(true);
     const data = Object.fromEntries(formData.entries());
 
     try {
@@ -35,7 +54,17 @@ export function LoginForm() {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      setError(err.message || 'Login failed');
+      if (err.errors) {
+        // Map backend validation errors
+        const errors: { [key: string]: string | null } = {};
+        Object.keys(err.errors).forEach((key) => {
+          errors[key] = err.errors[key][0];
+        });
+        setFieldErrors(errors);
+        setError("Please check the fields above");
+      } else {
+        setError(err.message || 'Login failed. Please check your credentials.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -55,6 +84,7 @@ export function LoginForm() {
           type="email"
           placeholder="name@studio.com"
           variant="login"
+          error={fieldErrors.email}
         />
 
         <PasswordField
@@ -62,6 +92,7 @@ export function LoginForm() {
           id="password"
           placeholder="••••••••"
           variant="login"
+          error={fieldErrors.password}
         // forgotLink
         />
 
