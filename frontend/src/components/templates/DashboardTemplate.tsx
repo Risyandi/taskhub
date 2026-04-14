@@ -1,5 +1,6 @@
 // created by risyandi.com - 2026
 import React from 'react';
+import Link from 'next/link';
 import { SideNavBar } from '../organisms/SideNavBar';
 // import { TopNavBar } from '../organisms/TopNavBar';
 
@@ -21,28 +22,12 @@ export function DashboardTemplate({ children }: DashboardTemplateProps) {
       </main>
 
       {/* Mobile Navigation (BottomNavBar) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#fbf3e4] dark:bg-stone-900 border-t border-stone-200/50 dark:border-stone-800/50 px-6 py-3 flex justify-between items-center z-50">
-        <button className="flex flex-col items-center gap-1 text-[#228B22] font-bold">
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>calendar_today</span>
-          <span className="text-[10px] uppercase">Today</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-on-surface-variant">
-          <span className="material-symbols-outlined">all_inbox</span>
-          <span className="text-[10px] uppercase">Inbox</span>
-        </button>
-        <div className="-mt-12">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#fbf3e4] dark:bg-stone-900 border-t border-stone-200/50 dark:border-stone-800/50 px-6 py-3 flex justify-center items-center z-50">
+        <Link href="/tasks/new" className="-mt-12">
           <button className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center editorial-shadow active:scale-90 transition-transform">
             <span className="material-symbols-outlined text-3xl">add</span>
           </button>
-        </div>
-        <button className="flex flex-col items-center gap-1 text-on-surface-variant">
-          <span className="material-symbols-outlined">folder_open</span>
-          <span className="text-[10px] uppercase">Projects</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-on-surface-variant">
-          <span className="material-symbols-outlined">menu_book</span>
-          <span className="text-[10px] uppercase">Library</span>
-        </button>
+        </Link>
       </nav>
     </div>
   );
