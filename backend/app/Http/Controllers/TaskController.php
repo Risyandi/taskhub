@@ -22,7 +22,7 @@ class TaskController extends Controller
         $deadline = Carbon::createFromFormat('d/m/Y', $validated['date_deadline'])->format('Y-m-d');
 
         $task = $request->user()->tasks()->create([
-            'title' => $validated['title'],
+            'title' => "{$request->user()->fullname} - {$validated['title']}",
             'description' => $validated['description'] ?? null,
             'date_deadline' => $deadline,
             'priority' => $validated['priority'],
