@@ -49,29 +49,29 @@ export function LoginForm() {
       </div>
 
       <form className="space-y-8" onSubmit={handleSubmit}>
-        <FormField 
+        <FormField
           label="Email Address"
           id="email"
           type="email"
           placeholder="name@studio.com"
           variant="login"
         />
-        
-        <PasswordField 
+
+        <PasswordField
           label="Password"
           id="password"
           placeholder="••••••••"
           variant="login"
-          forgotLink
+        // forgotLink
         />
 
         <div className="pt-4">
           {error && <p className="text-error text-sm mb-4 font-bold">{error}</p>}
-          <Button type="submit" disabled={isLoading}>{isLoading ? "Signing in..." : "Sign in to Workspace"}</Button>
+          <Button type="submit" disabled={isLoading}>{isLoading ? "Signing in..." : "Sign in"}</Button>
         </div>
       </form>
 
-      <div className="space-y-6">
+      {/* <div className="space-y-6">
         <div className="relative flex items-center">
           <div className="flex-grow border-t border-outline-variant"></div>
           <span className="flex-shrink mx-4 text-xs font-label text-outline uppercase tracking-widest">or continue with</span>
@@ -81,13 +81,13 @@ export function LoginForm() {
           <SocialAuthButton provider="google" />
           <SocialAuthButton provider="apple" />
         </div>
-      </div>
+      </div> */}
 
       <div className="text-center pt-8">
         <p className="text-on-surface-variant text-sm">
-          Don't have an editorial account? 
+          Don't have an account?
           <Link href="/register" className="font-bold text-primary hover:underline decoration-2 underline-offset-4 ml-1">
-            Request Access
+            Create Account
           </Link>
         </p>
       </div>

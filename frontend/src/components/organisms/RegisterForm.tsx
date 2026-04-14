@@ -22,7 +22,7 @@ export function RegisterForm() {
 
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
-    
+
     // Map human checkbox to boolean
     const payload = {
       ...data,
@@ -58,7 +58,7 @@ export function RegisterForm() {
         <span className="font-label text-sm text-primary font-bold uppercase tracking-widest mb-2 block">Get Started</span>
         <h2 className="font-headline text-4xl font-bold text-on-surface tracking-tight mb-2">Create Account</h2>
         <p className="text-on-surface-variant font-body leading-relaxed">
-          Join the community of curators today. Already have an account?{" "}
+          Already have an account?{" "}
           <Link href="/login" className="text-primary font-semibold hover:underline decoration-2 underline-offset-4">
             Log in
           </Link>
@@ -66,7 +66,7 @@ export function RegisterForm() {
       </header>
 
       <form className="space-y-6" onSubmit={handleSubmit}>
-        <FormField 
+        <FormField
           label="FULL NAME"
           id="fullname"
           type="text"
@@ -74,7 +74,7 @@ export function RegisterForm() {
           variant="register"
         />
 
-        <FormField 
+        <FormField
           label="EMAIL ADDRESS"
           id="email"
           type="email"
@@ -83,13 +83,13 @@ export function RegisterForm() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <PasswordField 
+          <PasswordField
             label="PASSWORD"
             id="password"
             placeholder="••••••••"
             variant="register"
           />
-          <PasswordField 
+          <PasswordField
             label="CONFIRM"
             id="confirm_password"
             placeholder="••••••••"
@@ -97,14 +97,14 @@ export function RegisterForm() {
           />
         </div>
 
-        <CheckboxField 
+        <CheckboxField
           label="I confirm that I am a verified human curator"
           id="verified_human"
         />
 
         <div className="pt-4">
           {error && <p className="text-error text-sm mb-4 font-bold">{error}</p>}
-          <Button type="submit" disabled={isLoading}>{isLoading ? "Creating..." : "Create Account"}</Button>
+          <Button type="submit" disabled={isLoading}>{isLoading ? "Creating..." : "Create"}</Button>
         </div>
 
         <p className="text-center text-sm text-outline-variant mt-8 font-label px-8">
