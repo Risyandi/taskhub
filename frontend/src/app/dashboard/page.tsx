@@ -4,22 +4,31 @@
 import React, { useEffect, useState } from 'react';
 import { DashboardTemplate } from '@/components/templates/DashboardTemplate';
 import { StatCard } from '@/components/molecules/StatCard';
-import { TaskRow, TaskRowProps } from '@/components/molecules/TaskRow';
+import { TaskRow } from '@/components/molecules/TaskRow';
 import { fetchApi } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function DashboardPage() {
   const { isAuthenticated } = useAuth();
+  const PER_PAGE = 5;
+
   const [tasks, setTasks] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [sortParam, setSortParam] = useState<string>('newest');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [meta, setMeta] = useState({ current_page: 1, last_page: 1, per_page: PER_PAGE, total: 0, from: 0, to: 0 });
+
+  // Reset to page 1 whenever filter or sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilter, sortParam]);
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchTasks();
     }
-  }, [isAuthenticated, activeFilter, sortParam]);
+  }, [isAuthenticated, activeFilter, sortParam, currentPage]);
 
   const fetchTasks = async () => {
     try {
@@ -28,11 +37,13 @@ export default function DashboardPage() {
       if (activeFilter === 'high_priority') params.append('priority', 'high');
       if (activeFilter === 'deadline_approaching') params.append('deadline', 'approaching');
       if (activeFilter === 'in_progress') params.append('status', 'pending');
-      
       if (sortParam) params.append('sort', sortParam);
+      params.append('page', String(currentPage));
+      params.append('per_page', String(PER_PAGE));
 
-      const data = await fetchApi(`/tasks?${params.toString()}`);
-      setTasks(data || []);
+      const res = await fetchApi(`/tasks?${params.toString()}`);
+      setTasks(res?.data || []);
+      if (res?.meta) setMeta(res.meta);
     } catch (e) {
       console.error(e);
     } finally {
@@ -53,6 +64,19 @@ export default function DashboardPage() {
   const inProgressCount = tasks.filter(t => !t.is_completed).length;
   const completedCount = tasks.filter(t => t.is_completed).length;
 
+  // Build smart page-number list with ellipsis
+  const buildPageNumbers = (): (number | '...')[] => {
+    const total = meta.last_page;
+    const cur = meta.current_page;
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    const pages: (number | '...')[] = [1];
+    if (cur > 3) pages.push('...');
+    for (let p = Math.max(2, cur - 1); p <= Math.min(total - 1, cur + 1); p++) pages.push(p);
+    if (cur < total - 2) pages.push('...');
+    pages.push(total);
+    return pages;
+  };
+
   return (
     <DashboardTemplate>
       <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
@@ -68,25 +92,25 @@ export default function DashboardPage() {
 
       <section className="flex flex-wrap items-center justify-between gap-6 bg-surface-container-low/50 p-2 rounded-full ghost-border px-6 py-3">
         <div className="flex items-center gap-4 overflow-x-auto no-scrollbar">
-          <button 
+          <button
             onClick={() => setActiveFilter('all')}
             className={`px-5 py-2 rounded-full font-medium text-sm transition-colors whitespace-nowrap ${activeFilter === 'all' ? 'bg-primary text-white' : 'hover:bg-surface-container-highest text-on-surface-variant'}`}
           >
             All Tasks
           </button>
-          <button 
+          <button
             onClick={() => setActiveFilter('high_priority')}
             className={`px-5 py-2 rounded-full font-medium text-sm transition-colors whitespace-nowrap ${activeFilter === 'high_priority' ? 'bg-primary text-white' : 'hover:bg-surface-container-highest text-on-surface-variant'}`}
           >
             High Priority
           </button>
-          <button 
+          <button
             onClick={() => setActiveFilter('deadline_approaching')}
             className={`px-5 py-2 rounded-full font-medium text-sm transition-colors whitespace-nowrap ${activeFilter === 'deadline_approaching' ? 'bg-primary text-white' : 'hover:bg-surface-container-highest text-on-surface-variant'}`}
           >
             Deadline Approaching
           </button>
-          <button 
+          <button
             onClick={() => setActiveFilter('in_progress')}
             className={`px-5 py-2 rounded-full font-medium text-sm transition-colors whitespace-nowrap ${activeFilter === 'in_progress' ? 'bg-primary text-white' : 'hover:bg-surface-container-highest text-on-surface-variant'}`}
           >
@@ -95,7 +119,7 @@ export default function DashboardPage() {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-label text-[10px] uppercase tracking-widest text-outline mr-2">Sort by:</span>
-          <select 
+          <select
             value={sortParam}
             onChange={(e) => setSortParam(e.target.value)}
             className="bg-transparent border-none text-sm font-semibold focus:ring-0 cursor-pointer text-primary"
@@ -112,7 +136,7 @@ export default function DashboardPage() {
         <div className="min-w-[800px]">
           <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-outline-variant/30 text-label text-[10px] uppercase tracking-widest text-outline font-bold">
             <div className="col-span-5">Task Details</div>
-            <div className="col-span-2">Owner</div>
+            {/* <div className="col-span-2">Owner</div> */}
             <div className="col-span-2">Priority</div>
             <div className="col-span-2 text-center">Deadline</div>
             <div className="col-span-1"></div>
@@ -143,20 +167,45 @@ export default function DashboardPage() {
 
       <section className="flex items-center justify-between pt-8 border-t border-outline-variant/20">
         <div className="text-sm text-on-surface-variant">
-          Showing <span className="font-bold text-on-surface">{tasks.length > 0 ? 1 : 0}-{tasks.length}</span> of <span className="font-bold text-on-surface">{tasks.length}</span> tasks
+          Showing{' '}
+          <span className="font-bold text-on-surface">
+            {meta.total > 0 ? meta.from : 0}–{meta.to}
+          </span>{' '}
+          of{' '}
+          <span className="font-bold text-on-surface">{meta.total}</span> tasks
         </div>
         <div className="flex items-center gap-2">
-          <button className="p-2 rounded-full hover:bg-surface-container-high text-outline-variant hover:text-primary transition-all">
+          <button
+            disabled={meta.current_page <= 1}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            className="p-2 rounded-full hover:bg-surface-container-high text-outline-variant hover:text-primary transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          >
             <span className="material-symbols-outlined">chevron_left</span>
           </button>
           <div className="flex items-center gap-1">
-            <button className="w-8 h-8 rounded-full bg-primary text-white text-xs font-bold">1</button>
-            <button className="w-8 h-8 rounded-full hover:bg-surface-container-high text-on-surface-variant text-xs font-bold transition-all">2</button>
-            <button className="w-8 h-8 rounded-full hover:bg-surface-container-high text-on-surface-variant text-xs font-bold transition-all">3</button>
-            <span className="mx-1 text-outline-variant">...</span>
-            <button className="w-8 h-8 rounded-full hover:bg-surface-container-high text-on-surface-variant text-xs font-bold transition-all">5</button>
+            {buildPageNumbers().map((item, idx) =>
+              item === '...' ? (
+                <span key={`ellipsis-${idx}`} className="mx-1 text-outline-variant text-xs">...</span>
+              ) : (
+                <button
+                  key={item}
+                  onClick={() => setCurrentPage(item as number)}
+                  className={`w-8 h-8 rounded-full text-xs font-bold transition-all ${
+                    item === meta.current_page
+                      ? 'bg-primary text-white'
+                      : 'hover:bg-surface-container-high text-on-surface-variant'
+                  }`}
+                >
+                  {item}
+                </button>
+              )
+            )}
           </div>
-          <button className="p-2 rounded-full hover:bg-surface-container-high text-outline-variant hover:text-primary transition-all">
+          <button
+            disabled={meta.current_page >= meta.last_page}
+            onClick={() => setCurrentPage(p => Math.min(meta.last_page, p + 1))}
+            className="p-2 rounded-full hover:bg-surface-container-high text-outline-variant hover:text-primary transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          >
             <span className="material-symbols-outlined">chevron_right</span>
           </button>
         </div>

@@ -6,9 +6,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormField } from "../molecules/FormField";
 import { PasswordField } from "../molecules/PasswordField";
-import { SocialAuthButton } from "../molecules/SocialAuthButton";
 import { Button } from "../atoms/Button";
 import { fetchApi } from "@/lib/api";
+
+// import { SocialAuthButton } from "../molecules/SocialAuthButton";
 
 import { validateEmail, validatePassword } from "@/lib/validation";
 
