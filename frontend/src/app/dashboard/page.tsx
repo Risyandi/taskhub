@@ -137,7 +137,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-outline-variant/30 text-label text-[10px] uppercase tracking-widest text-outline font-bold">
             <div className="col-span-5">Task Details</div>
             {/* <div className="col-span-2">Owner</div> */}
-            <div className="col-span-2">Priority</div>
+            <div className="col-span-4">Priority</div>
             <div className="col-span-2 text-center">Deadline</div>
             <div className="col-span-1"></div>
           </div>
@@ -190,11 +190,10 @@ export default function DashboardPage() {
                 <button
                   key={item}
                   onClick={() => setCurrentPage(item as number)}
-                  className={`w-8 h-8 rounded-full text-xs font-bold transition-all ${
-                    item === meta.current_page
+                  className={`w-8 h-8 rounded-full text-xs font-bold transition-all ${item === meta.current_page
                       ? 'bg-primary text-white'
                       : 'hover:bg-surface-container-high text-on-surface-variant'
-                  }`}
+                    }`}
                 >
                   {item}
                 </button>
