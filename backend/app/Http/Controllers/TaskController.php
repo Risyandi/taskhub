@@ -63,23 +63,43 @@ class TaskController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
-        $tasks = $query->get()->map(function ($task) {
+        $perPage = min((int) $request->query('per_page', 10), 100);
+
+        $paginator = $query->paginate($perPage);
+
+        $items = collect($paginator->items())->map(function ($task) {
             $urgentWords = ['mendesak', 'urgent'];
             $needAttention = false;
-            
+
             foreach ($urgentWords as $word) {
                 if (stripos($task->title, $word) !== false || stripos($task->description, $word) !== false) {
                     $needAttention = true;
                     break;
                 }
             }
-            
+
             $taskArray = $task->toArray();
             $taskArray['need_attention'] = $needAttention;
             return $taskArray;
         });
 
-        return response()->json($tasks);
+        return response()->json([
+            'data'  => $items,
+            'meta'  => [
+                'current_page' => $paginator->currentPage(),
+                'last_page'    => $paginator->lastPage(),
+                'per_page'     => $paginator->perPage(),
+                'total'        => $paginator->total(),
+                'from'         => $paginator->firstItem(),
+                'to'           => $paginator->lastItem(),
+            ],
+            'links' => [
+                'first' => $paginator->url(1),
+                'last'  => $paginator->url($paginator->lastPage()),
+                'prev'  => $paginator->previousPageUrl(),
+                'next'  => $paginator->nextPageUrl(),
+            ],
+        ]);
     }
 
     public function markAsCompleted(Request $request, $id)
